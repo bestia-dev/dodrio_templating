@@ -1,0 +1,245 @@
+/*simplified css style based on https://www.w3schools.com/w3css/default.asp */
+
+/*custom properties, variables*/
+:root {
+    --fs16px:16px;
+    --fs13cpl:3.6rem;
+    --fs16cpl:3.0rem;
+    --fs20cpl:2.4rem;
+    --fs24cpl:2.0rem;
+    --fs26cpl:1.8rem;
+    --fs32cpl:1.5rem;
+    --fs40cpl:1.2rem;
+    --fs48cpl:1.0rem;
+    --fs60cpl:0.8rem;
+}
+
+/*region elements - styles accross all the elements */
+
+html { 
+    /*the font-size is very much dependent on the font-family*/
+    font-family: Verdana, sans-serif;
+    /*try to avoid mobile browsers to mess with the font-size*/
+    -webkit-text-size-adjust: none; 
+    -ms-text-size-adjust: none; 
+    text-size-adjust: none;
+    /*This is the base font-size. All other font-size 
+    use rem units that are
+    relative to this font-size.
+    In WASM I manipulate this value to have the right text width for the game.*/
+    font-size: var(--fs16px);
+    /*this is a game. All pages except instructions should be not scrollable*/
+    height: 100%;
+    width:100%;
+    padding-right: 0px;
+	overflow-y: auto;
+	overflow-x: hidden;
+    word-wrap: break-word;
+    box-sizing: border-box;
+    background-color: #101010;
+    line-height: 1.5;
+    color: #FBF462;
+    user-select: none;
+}
+
+body{
+    background-color: #000000;
+    max-width: 600px;
+    min-width:300px;
+    width:100%;
+    /*margin auto means centered horizontaly*/
+    margin: auto;
+    /*this is a game. All pages except instructions should be not scrollable*/
+    height: 100%;
+}
+
+/*CSS Reset*/
+div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+ margin: 0;
+ padding: 0;
+ border: 0;
+ border-style: none;
+ outline: 0;
+ font-family: Verdana, sans-serif;
+ vertical-align: baseline;
+ background: transparent;
+ font-size: var(--fs16rem);
+}
+
+img { 
+    max-width:100%; 
+    -ms-interpolation-mode: bicubic; 
+    vertical-align: middle;
+}
+
+*,*:before,*:after {
+    box-sizing: inherit;
+}
+
+h1,h2,h3,h4,h5,h6,p {
+    font-weight: 400;
+    margin: 10px 0;
+    text-align: center;
+    width:100%;
+}
+
+h1 {
+    font-size: var(--fs13cpl) ;
+}
+
+h2 {
+    font-size: var(--fs16cpl) ;
+}
+
+h3 {
+    font-size: var(--fs20cpl) ;
+}
+
+h4 {
+    font-size: var(--fs24cpl) ;
+}
+
+h5 {
+    font-size: var(--fs26cpl) ;
+}
+
+h6 {
+    font-size: var(--fs60cpl) ;
+}
+
+/*region classes - can be used for many elements*/
+
+img.center{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.m_container {
+    margin-left: auto;
+    margin-right: auto;
+    color: #FBF462 ;
+    background-color: #000000 ;
+    width:100%;
+}
+
+/* using simple css-grid for the layout of the game grid */
+.grid_container {
+    display: grid;
+    grid-row-gap: 5px;
+    grid-column-gap: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    width:100%;
+}
+
+.grid_item {
+    text-align: center;
+}
+
+.grid_item_img{
+    align-content: center;
+    vertical-align: middle;
+    width: 100%;
+    height: 100%;
+}
+
+.grid_container_header {
+    display: grid;
+    font-size: var(--fs13cpl) ;
+    width:100%;
+}
+
+.grid_container_players {
+    display: grid;
+    font-size: var(--fs24cpl) ;
+    width:100%;
+}
+
+.div_clickable {
+    background-color: rgb(0, 0, 0);
+    cursor: pointer;
+}
+
+/*user must click this to continue. It blinks.*/
+.h2_user_must_click{
+    color:green;
+    animation: blinker 1s linear infinite;
+}
+
+/*user can click this, but is not required.*/
+.h2_user_can_click{
+    color:green;
+}
+
+/*user must wait. Cannot click anything.*/
+.h2_user_must_wait{
+    color:red;
+}
+
+/*user must do something*/
+.h2_must_do_something{
+    color:orange;
+}
+
+.input_nickname_blink{
+    animation: blinker 1s linear infinite;
+}
+
+/*region css for elements by id - because they are used only one time*/
+
+#card_moniker_left #card_moniker_right #card_moniker_center{
+    white-space:nowrap;
+}
+
+#card_moniker_left{
+    text-align: left;
+    padding-left: 5%;
+}
+
+#card_moniker_right{
+    text-align: right;
+    padding-right: 5%;
+}
+
+#card_moniker_center{
+    text-align: center;
+}
+
+#input_nickname {
+    width:100%;
+    border: none;
+    margin:auto;
+    display:inline-block;
+    text-align: center;
+    background-color: #212121;
+    color: rgb(252, 255, 77);
+    font-size: var(--fs16cpl) ;
+}
+
+#div_fullscreen{
+    background-color: rgb(0, 0, 0);
+    cursor: pointer;
+    background-color: yellow;
+}
+
+#h2_fullscreen{
+    color:#013d01;
+    animation: blinker 1s linear infinite;
+}
+
+/*special instructions*/
+@keyframes blinker {
+    50% {
+      opacity: 0.2;
+    }
+  }
+

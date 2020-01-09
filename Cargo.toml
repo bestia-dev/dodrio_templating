@@ -1,0 +1,58 @@
+[package]
+name = "dodrio_templating"
+version = "0.1.0"
+authors = ["Luciano Bestia <luciano.bestia@gmail.com>"]
+edition = "2018"
+description = "font size"
+repository = "https://github.com/LucianoBestia/dodrio_templating"
+readme = "README.md"
+license = "MIT"
+keywords = ["wasm","templating"]
+categories = ["learning"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+#smaller wasm size
+lto = true
+#optimize for size 's', more opt for size 'z'
+opt-level = 's'
+
+[dependencies]
+cfg-if="0.1.10"
+unwrap = "1.2.1"
+dodrio =  { git = "https://github.com/fitzgen/dodrio", branch = "master" }
+wasm-bindgen = { version = "0.2.58" }
+console_error_panic_hook = "0.1.6"
+roxmltree = "0.9.0"
+
+[dependencies.web-sys]
+version = "0.3.34"
+features = [
+  "AbortController",
+  "console",
+  "Document",
+  "DomException",
+  "Element",
+  "ErrorEvent",
+  "Event",
+  "EventListener",
+  "EventTarget",
+  "FormData",
+  "Headers",
+  "HtmlCanvasElement",
+  "HtmlCollection",
+  "HtmlElement",
+  "HtmlFormElement",
+  "HtmlInputElement",
+  "HtmlImageElement",
+  "Location",
+  "MouseEvent",
+  "Node",
+  "ReferrerPolicy",
+  "Window",
+]
+
+#[dev-dependencies]
+#wasm-bindgen-test = "0.3.8"
