@@ -1,4 +1,4 @@
-//! **fetchtest2**  
+//! **dodrio_templating**  
 
 //region: Clippy
 #![warn(
@@ -112,17 +112,15 @@ impl RootRenderingComponent {
 impl Render for RootRenderingComponent {
     #[allow(clippy::panic)]
     fn render<'a>(&self, cx: &mut RenderContext<'a>) -> Node<'a> {
-        let s = r#"
-        <div id="my_project">
-            <h1 id="hello">hahahah</h1>
-            <h2 id="lala">lalala</h2>
+        //experimenting with xml/html fragments
+        let s = r#"<div id="my_project">
+            <h1 id="hello"> hahahah </h1>
+            <h2 id="lala"> lalala </h2>
         </div>
         "#;
 
+        //parse to nodes (element,text) and attributes
         let doc = unwrap!(roxmltree::Document::parse(&s));
-
-        //deserialize to nodes and attributes
-
         let bump = cx.bump;
         let n1 = ElementBuilder::new(bump, "p");
         let mut vt = vec![];
@@ -130,28 +128,41 @@ impl Render for RootRenderingComponent {
         for node in doc.descendants() {
             if node.is_element() {
                 vt.push(text(
-                    bumpalo::format!(in bump, "{:?} at {}\n",
+                    bumpalo::format!(in bump, "{:?} at {}",
                     node.tag_name(),
                     doc.text_pos_at(node.range().start))
                     .into_bump_str(),
                 ));
+                vt.push(br(bump).finish());
                 for att in node.attributes() {
                     vt.push(text(
-                        bumpalo::format!(in bump, "{:?} at {}\n",
+                        bumpalo::format!(in bump, "{:?} = {}",
                         att.name(),
                         att.value()
                         )
                         .into_bump_str(),
                     ));
+                    vt.push(br(bump).finish());
                 }
-            } else if node.is_text() {
+                let txt = unwrap!(node.text()).trim();
+                if !txt.is_empty() {
+                    vt.push(text(
+                        bumpalo::format!(in bump, "{:?} = \"{}\" ",
+                        "text",
+                        txt
+                        )
+                        .into_bump_str(),
+                    ));
+                    vt.push(br(bump).finish());
+                }
+            } else {
                 vt.push(text(
-                    bumpalo::format!(in bump, "{:?} at {}\n",
-                    "test",
-                    node.text().unwrap()
+                    bumpalo::format!(in bump, "ajoj. some other type of node {}",
+                    ""
                     )
                     .into_bump_str(),
                 ));
+                vt.push(br(bump).finish());
             }
         }
         let n1 = n1.children(vt);
