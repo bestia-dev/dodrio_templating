@@ -59,14 +59,16 @@
 //endregion
 
 //region: extern and use statements
+mod fetchmod;
+
 //use console_error_panic_hook;
 use dodrio::bumpalo::{self, Bump};
-use dodrio::builder::*;
 use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use dodrio::{Node, Render, RenderContext};
 //use wasm_bindgen::JsCast; //don't remove this. It is needed for dyn_into.
 use web_sys::{console};
+use wasm_bindgen_futures::spawn_local;
 //endregion
 
 use quick_xml::Reader;
@@ -101,23 +103,6 @@ pub fn wasm_bindgen_start() {
     // Construct a new rendering component.
     let mut rrc = RootRenderingComponent::new();
 
-    //experimenting with xml/html fragments
-    rrc.respbody = r#"<div id="my_project">
-    firstdiv
-        <h1 id="hello"> hahahah </h1>
-        <h2 id="lala"> lalala </h2>
-        jjjjjj
-        <h3 >333333</h3>
-        <div>
-        dddd
-        <p>pppp</p>
-        <p>pppp</p>
-        </div>
-        testfromdiv
-    </div>
-    "#
-    .to_owned();
-
     // Mount the component to the `<body>`.
     let vdom = dodrio::Vdom::new(&div_for_virtual_dom, rrc);
 
@@ -139,13 +124,29 @@ impl Render for RootRenderingComponent {
     #[allow(clippy::panic)]
     fn render<'a>(&self, cx: &mut RenderContext<'a>) -> Node<'a> {
         let bump = cx.bump;
-        let node = parse_xml_create_node(&self.respbody, &bump);
+        use dodrio::builder::*;
         //return
-        node
+        div(&cx)
+            .children([
+                button(&cx)
+                    .on("click", |root, vdom, event| {
+                        let v2 = vdom.clone();
+                        //async executor spawn_local is the recommanded for wasm
+                        let url = "example/t1.html".to_owned();
+                        log1(&url);
+                        //this will change the rrc.respbody eventually
+                        spawn_local(async_fetch_and_rrcwrite(url, v2));
+                    })
+                    .children([text("fetch and write")])
+                    .finish(),
+                parse_xml_create_node(&self.respbody, &bump),
+            ])
+            .finish()
     }
 }
 
 pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
+    use dodrio::builder::*;
     //parse to nodes (element,text) and attributes
     let mut id_num = 0;
 
@@ -256,4 +257,28 @@ pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
 
     //return
     root_node
+}
+
+/// the async fn for executor spawn_local
+/// with update the value in struct rrc with await
+pub async fn async_fetch_and_rrcwrite(url: String, vdom: dodrio::VdomWeak) {
+    let text_jsvalue = fetchmod::async_spwloc_fetch(url).await;
+    let txt_str: String = unwrap!(JsValue::as_string(&text_jsvalue));
+    //update values in rrc is async
+    //I can use a fn call or an async block
+    async {
+        unwrap!(
+            vdom.with_component({
+                move |root| {
+                    let rrc = root.unwrap_mut::<RootRenderingComponent>();
+                    rrc.respbody = txt_str;
+                }
+            })
+            .await
+        );
+        vdom.schedule_render();
+    }
+    .await;
+
+    log1("end of async_fetch_and_rrcwrite()");
 }
