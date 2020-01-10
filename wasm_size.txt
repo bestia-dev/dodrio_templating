@@ -1,0 +1,14 @@
+
+wee_alloc, unwrap, wasm-bindgen
+
+wasm only             1427 bytes
+add web_sys window    5026
+add document          5280
+add element           5597
+console panic       37.010  
+web_sys console     37.010
+roxml              106.496  cc 69.500          wowowowowowowo
+quick-xml           78.111  cc 41.000
+dodrio+builder      85.092  cc 48.000
+xml and dodrio     121.964
+ 

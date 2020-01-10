@@ -20,39 +20,41 @@ lto = true
 opt-level = 's'
 
 [dependencies]
-cfg-if="0.1.10"
+#cfg-if="0.1.10"
 unwrap = "1.2.1"
 dodrio =  { git = "https://github.com/fitzgen/dodrio", branch = "master" }
 wasm-bindgen = { version = "0.2.58" }
 console_error_panic_hook = "0.1.6"
-roxmltree = "0.9.0"
+quick-xml = "0.17.2"
+wee_alloc = "0.4.5"
 
 [dependencies.web-sys]
 version = "0.3.34"
 features = [
-  "AbortController",
+#  "AbortController",
   "console",
   "Document",
-  "DomException",
+#  "DomException",
   "Element",
-  "ErrorEvent",
-  "Event",
-  "EventListener",
-  "EventTarget",
-  "FormData",
-  "Headers",
-  "HtmlCanvasElement",
-  "HtmlCollection",
-  "HtmlElement",
-  "HtmlFormElement",
-  "HtmlInputElement",
-  "HtmlImageElement",
-  "Location",
-  "MouseEvent",
-  "Node",
-  "ReferrerPolicy",
+#  "ErrorEvent",
+#  "Event",
+#  "EventListener",
+#  "EventTarget",
+#  "FormData",
+#  "Headers",
+#  "HtmlCanvasElement",
+#  "HtmlCollection",
+#  "HtmlElement",
+#  "HtmlFormElement",
+#  "HtmlInputElement",
+#  "HtmlImageElement",
+#  "Location",
+#  "MouseEvent",
+#  "Node",
+#  "ReferrerPolicy",
   "Window",
 ]
 
 #[dev-dependencies]
 #wasm-bindgen-test = "0.3.8"
+
