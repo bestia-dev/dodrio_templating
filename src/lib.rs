@@ -99,9 +99,12 @@ pub fn wasm_bindgen_start() {
     let window = unwrap!(web_sys::window());
     let document = unwrap!(window.document());
     let div_for_virtual_dom = unwrap!(document.get_element_by_id("div_for_virtual_dom"));
+    let location = window.clone().location();
+    let pathname = location.pathname().expect("no path");
+    log1(&pathname);
 
     // Construct a new rendering component.
-    let mut rrc = RootRenderingComponent::new();
+    let rrc = RootRenderingComponent::new();
 
     // Mount the component to the `<body>`.
     let vdom = dodrio::Vdom::new(&div_for_virtual_dom, rrc);
@@ -129,7 +132,7 @@ impl Render for RootRenderingComponent {
         div(&cx)
             .children([
                 button(&cx)
-                    .on("click", |root, vdom, event| {
+                    .on("click", |_root, vdom, _event| {
                         let v2 = vdom.clone();
                         //async executor spawn_local is the recommanded for wasm
                         let url = "example/t1.html".to_owned();
@@ -137,7 +140,29 @@ impl Render for RootRenderingComponent {
                         //this will change the rrc.respbody eventually
                         spawn_local(async_fetch_and_rrcwrite(url, v2));
                     })
+                    .children([text("fetch 2")])
+                    .finish(),
+                button(&cx)
+                    .on("click", |_root, vdom, _event| {
+                        let v2 = vdom.clone();
+                        //async executor spawn_local is the recommanded for wasm
+                        let url = "example/t2.html".to_owned();
+                        log1(&url);
+                        //this will change the rrc.respbody eventually
+                        spawn_local(async_fetch_and_rrcwrite(url, v2));
+                    })
                     .children([text("fetch and write")])
+                    .finish(),
+                button(&cx)
+                    .on("click", |_root, vdom, _event| {
+                        let v2 = vdom.clone();
+                        //async executor spawn_local is the recommanded for wasm
+                        let url = "example/t3.html".to_owned();
+                        log1(&url);
+                        //this will change the rrc.respbody eventually
+                        spawn_local(async_fetch_and_rrcwrite(url, v2));
+                    })
+                    .children([text("fetch 3")])
                     .finish(),
                 parse_xml_create_node(&self.respbody, &bump),
             ])
@@ -177,7 +202,7 @@ pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
                 let name = bumpalo::format!(in bump, "{}",
             str::from_utf8(e.name()).unwrap())
                 .into_bump_str();
-                log1(&format!("START id_num {} name {}", id_num, name));
+                //log1(&format!("START id_num {} name {}", id_num, name));
                 let mut eee = ElementBuilder::new(bump, name);
                 for attx in e.attributes() {
                     let att = unwrap!(attx);
@@ -187,7 +212,7 @@ pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
                     let value = bumpalo::format!(in bump, "{}",
             str::from_utf8(&att.value).unwrap())
                     .into_bump_str();
-                    log1(&format!("key {} value {}", &key, &value));
+                    //log1(&format!("key {} value {}", &key, &value));
                     //wow! because of the dot concatenation fancy programming style
                     //the variable is moved and then returned. Terrible for non dot concat style.
                     eee = eee.attr(&key, &value);
@@ -197,7 +222,7 @@ pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
                 if vec_child_parent.len() > 0 {
                     parent_id = unwrap!(vec_child_parent.last()).id;
                 }
-                log1(&format!("parent_id {}", &parent_id));
+                //log1(&format!("parent_id {}", &parent_id));
                 vec_elem.push(eee);
                 vec_child_parent.push(ChildParent {
                     id: id_num,
@@ -212,7 +237,7 @@ pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
                 //add the children
                 epop = epop.children(ch);
                 let node = epop.finish();
-                log1(&format!("END {:?}", &node));
+                //log1(&format!("END {:?}", &node));
                 //now add me to my parent
                 let ch_par = unwrap!(vec_child_parent.pop());
                 if ch_par.parent_id == 0 {
@@ -228,7 +253,7 @@ pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
                             //that is not allowed. I must found a workaround
                             //vec_elem[i].child(node);
                             vec_children[i].push(node);
-                            log1(&format!("added me to my parent{}", ""));
+                            //log1(&format!("added me to my parent{}", ""));
                             break;
                         }
                         i += 1;
@@ -240,7 +265,7 @@ pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
                 //text is also a children, but it cannot have children
                 let txt = bumpalo::format!(in bump, "{}",txt).into_bump_str();
                 let node = text(&txt);
-                log1(&format!("TEXT {:?}", &txt));
+                //log1(&format!("TEXT {:?}", &txt));
                 //add me to my parent
                 let last_el = unwrap!(vec_children.last_mut());
                 last_el.push(node);
@@ -253,7 +278,7 @@ pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
         buf.clear();
     }
 
-    log1(&format!("{:?}", &root_node));
+    //log1(&format!("{:?}", &root_node));
 
     //return
     root_node
@@ -276,9 +301,11 @@ pub async fn async_fetch_and_rrcwrite(url: String, vdom: dodrio::VdomWeak) {
             })
             .await
         );
+        let window = unwrap!(web_sys::window());
+        unwrap!(window.history()).push_state_with_url(&JsValue::from_str(""), "", Some("/t1"));
         vdom.schedule_render();
     }
     .await;
 
-    log1("end of async_fetch_and_rrcwrite()");
+    //log1("end of async_fetch_and_rrcwrite()");
 }
