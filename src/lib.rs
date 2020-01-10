@@ -99,8 +99,8 @@ pub fn wasm_bindgen_start() {
     let window = unwrap!(web_sys::window());
     let document = unwrap!(window.document());
     let div_for_virtual_dom = unwrap!(document.get_element_by_id("div_for_virtual_dom"));
-    let location = window.clone().location();
-    let pathname = location.pathname().expect("no path");
+    let location = window.location();
+    let pathname = unwrap!(location.pathname());
     log1(&pathname);
 
     // Construct a new rendering component.
@@ -124,16 +124,15 @@ impl RootRenderingComponent {
 
 // The `Render` implementation. It is called for every Dodrio animation frame to render the vdom.
 impl Render for RootRenderingComponent {
-    #[allow(clippy::panic)]
     fn render<'a>(&self, cx: &mut RenderContext<'a>) -> Node<'a> {
-        let bump = cx.bump;
         use dodrio::builder::*;
+        let bump = cx.bump;
         //return
         div(&cx)
             .children([
                 button(&cx)
                     .on("click", |_root, vdom, _event| {
-                        let v2 = vdom.clone();
+                        let v2 = vdom;
                         //async executor spawn_local is the recommanded for wasm
                         let url = "example/t1.html".to_owned();
                         log1(&url);
@@ -144,7 +143,7 @@ impl Render for RootRenderingComponent {
                     .finish(),
                 button(&cx)
                     .on("click", |_root, vdom, _event| {
-                        let v2 = vdom.clone();
+                        let v2 = vdom;
                         //async executor spawn_local is the recommanded for wasm
                         let url = "example/t2.html".to_owned();
                         log1(&url);
@@ -155,7 +154,7 @@ impl Render for RootRenderingComponent {
                     .finish(),
                 button(&cx)
                     .on("click", |_root, vdom, _event| {
-                        let v2 = vdom.clone();
+                        let v2 = vdom;
                         //async executor spawn_local is the recommanded for wasm
                         let url = "example/t3.html".to_owned();
                         log1(&url);
@@ -164,7 +163,7 @@ impl Render for RootRenderingComponent {
                     })
                     .children([text("fetch 3")])
                     .finish(),
-                parse_xml_create_node(&self.respbody, &bump),
+                parse_xml_create_node(&self.respbody, bump),
             ])
             .finish()
     }
@@ -172,18 +171,19 @@ impl Render for RootRenderingComponent {
 
 pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
     use dodrio::builder::*;
-    //parse to nodes (element,text) and attributes
-    let mut id_num = 0;
 
     struct ChildParent {
         id: usize,
         parent_id: usize,
     }
+
+    //parse to nodes (element,text) and attributes
+    let mut id_num = 0;
     //create a dummy node
-    let name = bumpalo::format!(in bump, "{}",
+    let name1 = bumpalo::format!(in bump, "{}",
  "dummy")
     .into_bump_str();
-    let eee = ElementBuilder::new(bump, name);
+    let eee = ElementBuilder::new(bump, name1);
     let mut root_node = eee.finish();
     //
     let mut vec_child_parent: Vec<ChildParent> = Vec::new();
@@ -197,36 +197,40 @@ pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
         let mut buf = Vec::new();
         match reader.read_event(&mut buf) {
             Ok(Event::Start(ref e)) => {
-                id_num += 1;
+                #[allow(clippy::integer_arithmetic)]
+                {
+                    id_num += 1;
+                }
                 //maybe it must be inside the bump
                 let name = bumpalo::format!(in bump, "{}",
-            str::from_utf8(e.name()).unwrap())
+            unwrap!(str::from_utf8(e.name())))
                 .into_bump_str();
                 //log1(&format!("START id_num {} name {}", id_num, name));
                 let mut eee = ElementBuilder::new(bump, name);
                 for attx in e.attributes() {
                     let att = unwrap!(attx);
                     let key = bumpalo::format!(in bump, "{}",
-            str::from_utf8(&att.key).unwrap())
+            unwrap!(str::from_utf8(att.key)))
                     .into_bump_str();
                     let value = bumpalo::format!(in bump, "{}",
-            str::from_utf8(&att.value).unwrap())
+            unwrap!(str::from_utf8(&att.value)))
                     .into_bump_str();
                     //log1(&format!("key {} value {}", &key, &value));
                     //wow! because of the dot concatenation fancy programming style
                     //the variable is moved and then returned. Terrible for non dot concat style.
-                    eee = eee.attr(&key, &value);
+                    eee = eee.attr(key, value);
                 }
                 //this must be a parent, because the sibling is already finished and poped
-                let mut parent_id = 0;
-                if vec_child_parent.len() > 0 {
-                    parent_id = unwrap!(vec_child_parent.last()).id;
-                }
+                let parent_id = if vec_child_parent.is_empty() {
+                    0
+                } else {
+                    unwrap!(vec_child_parent.last()).id
+                };
                 //log1(&format!("parent_id {}", &parent_id));
                 vec_elem.push(eee);
                 vec_child_parent.push(ChildParent {
                     id: id_num,
-                    parent_id: parent_id,
+                    parent_id,
                 });
                 vec_children.push(bumpalo::collections::Vec::new_in(bump));
             }
@@ -246,25 +250,23 @@ pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
                     break;
                 } else {
                     //fond parent (only one) and add it to him
-                    let mut i = 0;
-                    for x in &vec_child_parent {
+                    for (i, x) in vec_child_parent.iter().enumerate() {
                         if x.id == ch_par.parent_id {
                             //the child function moves the elem out of the vector.
                             //that is not allowed. I must found a workaround
                             //vec_elem[i].child(node);
-                            vec_children[i].push(node);
+                            unwrap!(vec_children.get_mut(i)).push(node);
                             //log1(&format!("added me to my parent{}", ""));
                             break;
                         }
-                        i += 1;
                     }
                 }
             }
             Ok(Event::Text(e)) => {
-                let txt = e.unescape_and_decode(&reader).unwrap();
+                let txt = unwrap!(e.unescape_and_decode(&reader));
                 //text is also a children, but it cannot have children
                 let txt = bumpalo::format!(in bump, "{}",txt).into_bump_str();
-                let node = text(&txt);
+                let node = text(txt);
                 //log1(&format!("TEXT {:?}", &txt));
                 //add me to my parent
                 let last_el = unwrap!(vec_children.last_mut());
@@ -302,7 +304,8 @@ pub async fn async_fetch_and_rrcwrite(url: String, vdom: dodrio::VdomWeak) {
             .await
         );
         let window = unwrap!(web_sys::window());
-        unwrap!(window.history()).push_state_with_url(&JsValue::from_str(""), "", Some("/t1"));
+        let _x =
+            unwrap!(window.history()).push_state_with_url(&JsValue::from_str(""), "", Some("#t1"));
         vdom.schedule_render();
     }
     .await;
