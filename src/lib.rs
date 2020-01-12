@@ -60,6 +60,7 @@
 
 //region: extern and use statements
 mod fetchmod;
+mod microxmlparser;
 
 //use console_error_panic_hook;
 use dodrio::bumpalo::{self, Bump};
@@ -67,14 +68,14 @@ use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use dodrio::{Node, Render, RenderContext};
 //use wasm_bindgen::JsCast; //don't remove this. It is needed for dyn_into.
-use web_sys::{console};
+use web_sys::{console, Window};
 use wasm_bindgen_futures::spawn_local;
 //endregion
 
 use quick_xml::Reader;
 use quick_xml::events::Event;
 use std::str;
-extern crate wee_alloc;
+use wee_alloc;
 
 // Use `wee_alloc` as the global allocator.
 #[global_allocator]
@@ -96,12 +97,17 @@ pub fn wasm_bindgen_start() {
     console_error_panic_hook::set_once();
 
     // Get the document's `<body>`.
-    let window = unwrap!(web_sys::window());
+    let window: Window = unwrap!(web_sys::window());
     let document = unwrap!(window.document());
     let div_for_virtual_dom = unwrap!(document.get_element_by_id("div_for_virtual_dom"));
-    let location = window.location();
-    let pathname = unwrap!(location.pathname());
-    log1(&pathname);
+    //let location: Location = window.location();
+    //window.
+    //let pathname: String = unwrap!(location.pathname());
+    //pathname.
+    //log1(&pathname);
+
+    //test my parser
+    microxmlparser::test_my_parser();
 
     // Construct a new rendering component.
     let rrc = RootRenderingComponent::new();
@@ -266,11 +272,10 @@ pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
                 let txt = unwrap!(e.unescape_and_decode(&reader));
                 //text is also a children, but it cannot have children
                 let txt = bumpalo::format!(in bump, "{}",txt).into_bump_str();
-                let node = text(txt);
                 //log1(&format!("TEXT {:?}", &txt));
                 //add me to my parent
                 let last_el = unwrap!(vec_children.last_mut());
-                last_el.push(node);
+                last_el.push(text(txt));
             }
             Ok(Event::Eof) => break, // exits the loop when reaching end of file
             Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
@@ -289,7 +294,7 @@ pub fn parse_xml_create_node<'a>(xml_html: &str, bump: &'a Bump) -> Node<'a> {
 /// the async fn for executor spawn_local
 /// with update the value in struct rrc with await
 pub async fn async_fetch_and_rrcwrite(url: String, vdom: dodrio::VdomWeak) {
-    let text_jsvalue = fetchmod::async_spwloc_fetch(url).await;
+    let text_jsvalue: JsValue = fetchmod::async_spwloc_fetch(url).await;
     let txt_str: String = unwrap!(JsValue::as_string(&text_jsvalue));
     //update values in rrc is async
     //I can use a fn call or an async block
