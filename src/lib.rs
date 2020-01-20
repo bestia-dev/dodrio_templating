@@ -9,7 +9,6 @@ use reader_for_microxml::*;
 
 //use console_error_panic_hook;
 use dodrio::bumpalo::{self, Bump};
-use dodrio::VdomWeak;
 use unwrap::unwrap;
 use wasm_bindgen::prelude::*;
 use dodrio::{Node, Listener, Attribute, Render, RenderContext};
@@ -59,8 +58,6 @@ pub fn wasm_bindgen_start() {
     // Start the URL router.
     routermod::start(vdom.weak());
 
-    //this will change the rrc.respbody eventually
-    let v2 = vdom.weak().clone();
     // Run the component forever.
     vdom.forget();
 }

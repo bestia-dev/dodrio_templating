@@ -1,0 +1,5 @@
+
+        // an example how to change the local_route from code
+        //let window = unwrap!(web_sys::window());
+        //let _x =
+        //    unwrap!(window.history()).push_state_with_url(&JsValue::from_str(""), "", Some("#t1"));

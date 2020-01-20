@@ -34,6 +34,7 @@ pub fn start(vdom: VdomWeak) {
                                 let url =
                                     format!("example/{}.html", rrc.local_route.replace("#", ""));
                                 let v2 = vdom.clone();
+                                //I cannot simply await here because this closure is not async
                                 spawn_local(async_fetch_and_rrcwrite(url, v2));
                                 vdom.schedule_render();
                             }
@@ -86,13 +87,7 @@ pub async fn async_fetch_and_rrcwrite(url: String, vdom: VdomWeak) {
             })
             .await
         );
-        // an example how to change the local_route from code
-        //let window = unwrap!(web_sys::window());
-        //let _x =
-        //    unwrap!(window.history()).push_state_with_url(&JsValue::from_str(""), "", Some("#t1"));
         vdom.schedule_render();
     }
     .await;
-
-    //log1("end of async_fetch_and_rrcwrite()");
 }
