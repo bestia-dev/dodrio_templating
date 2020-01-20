@@ -19,7 +19,7 @@ use wasm_bindgen_futures::{JsFuture};
 
 /// fetch in Rust with async await for executor spawn_local()
 /// return the response as JsValue. Any error will panic.
-pub async fn async_spwloc_fetch(url: String) -> JsValue {
+pub async fn async_spwloc_fetch_text(url: String) -> String {
     //Request init
     let mut opts = RequestInit::new();
     opts.method("GET");
@@ -33,6 +33,6 @@ pub async fn async_spwloc_fetch(url: String) -> JsValue {
     let text_jsvalue = unwrap!(JsFuture::from(unwrap!(resp.text())).await);
     //log1("after text()");
     log1(&unwrap!(JsValue::as_string(&text_jsvalue)));
-    //returns response as JsValue
-    text_jsvalue
+    //returns response as String
+    unwrap!(JsValue::as_string(&text_jsvalue))
 }

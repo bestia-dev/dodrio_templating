@@ -9,6 +9,7 @@ readme = "README.md"
 license = "MIT"
 keywords = ["wasm","templating"]
 categories = ["learning"]
+publish = false
 
 [lib]
 crate-type = ["cdylib"]
@@ -21,14 +22,13 @@ lto = true
 opt-level = 's'
 
 [dependencies]
-#cfg-if="0.1.10"
 unwrap = "1.2.1"
 dodrio =  { git = "https://github.com/fitzgen/dodrio", branch = "master" }
 wasm-bindgen = { version = "0.2.58" }
 console_error_panic_hook = "0.1.6"
-quick-xml = "0.17.2"
 wee_alloc = "0.4.5"
 wasm-bindgen-futures="0.4.8"
+reader_for_microxml = "1.0.3"
 
 [dependencies.web-sys]
 version = "0.3.34"
