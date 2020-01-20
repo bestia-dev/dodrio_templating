@@ -1,4 +1,4 @@
-# fetchtest2/Makefile.toml
+# dodrio_templating/Makefile.toml
 # https://github.com/sagiegurari/cargo-make/blob/master/src/lib/Makefile.stable.toml
 
 [config]
@@ -66,7 +66,7 @@ clear = true
 private = true
 script = [
     # chrome has a super security for cross-origin and it does not work well here
-    #"start chrome http://127.0.0.1:8186", 
+    #"start chrome http://127.0.0.1:8186#t2", 
     #"start \"firefox\" \"C:\\Program Files\\Mozilla Firefox\\firefox.exe\" 127.0.0.1:8186",
     "basic-http-server -a 127.0.0.1:8186",
 ]
@@ -76,6 +76,6 @@ clear = true
 private = true
 script = [
     "alias chrome=\"/mnt/c/Program\\ Files\\ \\(x86\\)/Google/Chrome/Application/chrome.exe\"",
-    #"chrome http://127.0.0.1:8186", 
+    #"chrome http://127.0.0.1:8186#t2", 
     "basic-http-server -a 127.0.0.1:8186",
 ]

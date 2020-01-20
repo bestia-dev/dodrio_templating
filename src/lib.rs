@@ -2,6 +2,8 @@
 
 //region: extern and use statements
 mod fetchmod;
+mod htmlentitiesmod;
+mod routermod;
 
 use reader_for_microxml::*;
 
@@ -14,7 +16,6 @@ use dodrio::{Node, Listener, Attribute, Render, RenderContext};
 use dodrio::builder::*;
 //use wasm_bindgen::JsCast; //don't remove this. It is needed for dyn_into.
 use web_sys::{console, Window};
-use wasm_bindgen_futures::spawn_local;
 //endregion
 
 use std::str;
@@ -32,6 +33,7 @@ fn log1(x: &str) {
 #[derive(Debug, Clone)]
 pub struct RootRenderingComponent {
     pub respbody: String,
+    pub local_route: String,
 }
 
 #[wasm_bindgen(start)]
@@ -44,31 +46,27 @@ pub fn wasm_bindgen_start() {
     let window: Window = unwrap!(web_sys::window());
     let document = unwrap!(window.document());
     let div_for_virtual_dom = unwrap!(document.get_element_by_id("div_for_virtual_dom"));
-    //TODO: I want to get the # query in the url
-    //let location: Location = window.location();
-    //window.
-    //let pathname: String = unwrap!(location.pathname());
-    //pathname.
-    //log1(&pathname);
 
     // Construct a new rendering component.
-    let rrc = RootRenderingComponent::new();
+    let rrc = RootRenderingComponent {
+        respbody: "".to_owned(),
+        local_route: "".to_owned(),
+    };
 
     // Mount the component to the `<body>`.
     let vdom = dodrio::Vdom::new(&div_for_virtual_dom, rrc);
 
+    // Start the URL router.
+    routermod::start(vdom.weak());
+
+    //this will change the rrc.respbody eventually
+    let v2 = vdom.weak().clone();
     // Run the component forever.
     vdom.forget();
 }
 
-impl RootRenderingComponent {
-    /// constructor
-    fn new() -> RootRenderingComponent {
-        //return
-        RootRenderingComponent {
-            respbody: "".to_owned(),
-        }
-    }
+pub fn hash_change() {
+    // TODO: how to get to vdom or to rrc ?
 }
 
 impl Render for RootRenderingComponent {
@@ -78,49 +76,14 @@ impl Render for RootRenderingComponent {
         let bump = cx.bump;
         //return
         div(&cx)
-            .children([
-                button(&cx)
-                    .on("click", |_root, vdom, _event| {
-                        let v2 = vdom;
-                        //async executor spawn_local is the recommended for wasm
-                        let url = "example/t1.html".to_owned();
-                        log1(&url);
-                        //this will change the rrc.respbody eventually
-                        spawn_local(async_fetch_and_rrcwrite(url, v2));
-                    })
-                    .children([text("fetch 2")])
-                    .finish(),
-                button(&cx)
-                    .on("click", |_root, vdom, _event| {
-                        let v2 = vdom;
-                        //async executor spawn_local is the recommended for wasm
-                        let url = "example/t2.html".to_owned();
-                        log1(&url);
-                        //this will change the rrc.respbody eventually
-                        spawn_local(async_fetch_and_rrcwrite(url, v2));
-                    })
-                    .children([text("fetch and write")])
-                    .finish(),
-                button(&cx)
-                    .on("click", |_root, vdom, _event| {
-                        let v2 = vdom;
-                        //async executor spawn_local is the recommended for wasm
-                        let url = "example/t3.html".to_owned();
-                        log1(&url);
-                        //this will change the rrc.respbody eventually
-                        spawn_local(async_fetch_and_rrcwrite(url, v2));
-                    })
-                    .children([text("fetch 3")])
-                    .finish(),
-                {
-                    // html fragment from file
-                    if self.respbody.is_empty() {
-                        div(&cx).finish()
-                    } else {
-                        get_root_element(&self.respbody, bump).unwrap()
-                    }
-                },
-            ])
+            .children([{
+                // html fragment from file defined in query
+                if self.respbody.is_empty() {
+                    div(&cx).finish()
+                } else {
+                    get_root_element(&self.respbody, bump).unwrap()
+                }
+            }])
             .finish()
     }
 }
@@ -193,7 +156,11 @@ fn fill_element_builder<'a>(
                 element = element.attr(name, value);
             }
             Event::TextNode(txt) => {
-                let txt = bumpalo::format!(in bump, "{}",txt).into_bump_str();
+                let txt =
+                    bumpalo::format!(in bump, "{}",htmlentitiesmod::decode_minimum_html_entities(txt))
+                        .into_bump_str();
+                // here accepts only utf-8.
+                // only minimum html entities are decoded
                 element = element.child(text(txt));
             }
             Event::EndElement(_name) => {
@@ -208,30 +175,4 @@ fn fill_element_builder<'a>(
             }
         }
     }
-}
-
-/// the async fn for executor spawn_local
-/// with update the value in struct rrc with await
-pub async fn async_fetch_and_rrcwrite(url: String, vdom: VdomWeak) {
-    let txt_str: String = fetchmod::async_spwloc_fetch_text(url).await;
-    // update values in rrc is async.
-    // I can await a fn call or an async block.
-    async {
-        unwrap!(
-            vdom.with_component({
-                move |root| {
-                    let rrc = root.unwrap_mut::<RootRenderingComponent>();
-                    rrc.respbody = txt_str;
-                }
-            })
-            .await
-        );
-        let window = unwrap!(web_sys::window());
-        let _x =
-            unwrap!(window.history()).push_state_with_url(&JsValue::from_str(""), "", Some("#t1"));
-        vdom.schedule_render();
-    }
-    .await;
-
-    //log1("end of async_fetch_and_rrcwrite()");
 }

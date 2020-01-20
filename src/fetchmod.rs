@@ -2,9 +2,9 @@
 //region description
 //! ## Async world
 //! With the new async/.await syntax in Rust it is now very easy to write async code.
-//! It is important to be carefull to NOT write sync code after async code.
+//! It is important to be careful to NOT write sync code after async code.
 //! It can be confusing that the sync code will execute before the async code !
-//! Webassembly is basically javascript and uses the recomanded executor spawn_local() or future_to_promise().
+//! Webassembly is basically javascript and uses the recommended executor spawn_local() or future_to_promise().
 //! Async cannot use any references to the stack because it is executed in another timeline.
 //endregion
 
