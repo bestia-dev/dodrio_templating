@@ -25,14 +25,10 @@ pub async fn async_spwloc_fetch_text(url: String) -> String {
     opts.method("GET");
     let request = unwrap!(Request::new_with_str_and_init(&url, &opts));
     let window = unwrap!(web_sys::window());
-    //log1("before fetch");
     let resp_jsvalue = unwrap!(JsFuture::from(window.fetch_with_request(&request)).await);
-    //log1("after fetch");
     let resp: Response = unwrap!(resp_jsvalue.dyn_into());
-    //log1("before text()");
-    let text_jsvalue = unwrap!(JsFuture::from(unwrap!(resp.text())).await);
-    //log1("after text()");
-    log1(&unwrap!(JsValue::as_string(&text_jsvalue)));
+    let resp_body_text = unwrap!(JsFuture::from(unwrap!(resp.text())).await);
+    log1(&unwrap!(JsValue::as_string(&resp_body_text)));
     //returns response as String
-    unwrap!(JsValue::as_string(&text_jsvalue))
+    unwrap!(JsValue::as_string(&resp_body_text))
 }

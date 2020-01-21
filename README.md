@@ -32,7 +32,8 @@ Than I intend to add invisible attributes and comments into html/svg to make it 
 
 ### attributes
 
-For attributes I will add a custom attribute like this `data-attname-t="function_name"`.  
+For attributes I will add a custom attribute like this `data-attrname-t="function_name"`.  
+It must be positioned exactly before the actual attribute - because of the parsing.  
 The `data-` means custom attributes for html5.  
 The mid part of the name is the original attribute name to change.  
 The `-t` is for now to distinguish attributes for templating.  
@@ -40,13 +41,13 @@ The function must return a string for the value of the attribute.
 
 ### text
 
-For the text node I will add a html comment after the node like this `<!--t=get_text()-->`.  
+For the text node I will add a html comment before the node like this `<!--t=get_text()-->`.  
 The name `t=` is to distinguish the function for templating.  
 The function must return a string to replace the original text node.  
 
 ```html
-<text fill="white" data-fill-t="get_color">
-hello<!--t=get_text-->
+<text data-t-01="get_color" fill="white">
+<!--t=get_text-->hello
 </text>
 ```
 
@@ -61,11 +62,12 @@ I found the existence of a standard (or proposal) for *MicroXml* - dramatically 
 String in html are encoded with html entities. There is a lot of them: named, decimal and hex.  
 But finally only 5 are required to not mess with the html code: " ' & < >.
 These 5 I decode from the html template. All other must be already in utf-8 without html entities.  
+
 ## svg
 
 Svg elements are slightly different from html elements.  
 Svg must be well-formed xml (more-or-less).  
-And it has a terrible namespace !! http://www.w3.org/2000/svg that MUST be used when creating the HtmlElements.  
+And it has a terrible namespace !! `http://www.w3.org/2000/svg` that MUST be used when creating the HtmlElements.  
 Names of elements and attributes are case-sensitive !!! and are not all lowercase, like html.  
 I will mix html and svg as much as possible.
 So I need to know where am I inside a tree: html or svg to add that namespace.  
@@ -80,3 +82,4 @@ The same with dodrio is just nothing.
 
 2020-01-10 I succeeded to read the html and create the dodrio vdom.  
 2020-01-20 MicroXml parsing, local router  
+2021-01-21 templating, replace variables  

@@ -1,4 +1,4 @@
-//! A simple `#`-fragment router.
+//! A simple `#`-fragment router for dodrio.
 
 use crate::RootRenderingComponent;
 use crate::fetchmod;
@@ -9,7 +9,7 @@ use wasm_bindgen_futures::spawn_local;
 use unwrap::unwrap;
 
 /// Start the router.
-pub fn start(vdom: VdomWeak) {
+pub fn start_router(vdom: VdomWeak) {
     // Callback fired whenever the URL hash fragment changes. Keeps the rrc.local_route
     // in sync with the `#` fragment.
     let on_hash_change = move || {
@@ -35,7 +35,7 @@ pub fn start(vdom: VdomWeak) {
                                     format!("example/{}.html", rrc.local_route.replace("#", ""));
                                 let v2 = vdom.clone();
                                 //I cannot simply await here because this closure is not async
-                                spawn_local(async_fetch_and_rrcwrite(url, v2));
+                                spawn_local(async_fetch_and_write_to_rrc(url, v2));
                                 vdom.schedule_render();
                             }
                         }
@@ -69,12 +69,12 @@ pub fn start(vdom: VdomWeak) {
 ///     let v2 = vdom;
 ///     //async executor spawn_local is the recommended for wasm
 ///     let url = "example/t1.html".to_owned();
-///     //this will change the rrc.respbody eventually
-///     spawn_local(async_fetch_and_rrcwrite(url, v2));
+///     //this will change the rrc.html_template eventually
+///     spawn_local(async_fetch_and_write_to_rrc(url, v2));
 /// })
 /// ```
-pub async fn async_fetch_and_rrcwrite(url: String, vdom: VdomWeak) {
-    let txt_str: String = fetchmod::async_spwloc_fetch_text(url).await;
+pub async fn async_fetch_and_write_to_rrc(url: String, vdom: VdomWeak) {
+    let resp_body_text: String = fetchmod::async_spwloc_fetch_text(url).await;
     // update values in rrc is async.
     // I can await a fn call or an async block.
     async {
@@ -82,7 +82,7 @@ pub async fn async_fetch_and_rrcwrite(url: String, vdom: VdomWeak) {
             vdom.with_component({
                 move |root| {
                     let rrc = root.unwrap_mut::<RootRenderingComponent>();
-                    rrc.respbody = txt_str;
+                    rrc.html_template = resp_body_text;
                 }
             })
             .await
