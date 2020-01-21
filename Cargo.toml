@@ -23,7 +23,8 @@ opt-level = 's'
 
 [dependencies]
 unwrap = "1.2.1"
-dodrio =  { git = "https://github.com/fitzgen/dodrio", branch = "master" }
+#dodrio =  { git = "https://github.com/fitzgen/dodrio", branch = "master" }
+dodrio = {path = "../dodrio"}
 wasm-bindgen = { version = "0.2.58" }
 console_error_panic_hook = "0.1.6"
 wee_alloc = "0.4.5"

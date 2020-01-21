@@ -72,16 +72,12 @@ impl Render for RootRenderingComponent {
     fn render<'a>(&self, cx: &mut RenderContext<'a>) -> Node<'a> {
         let bump = cx.bump;
         //return
-        div(&cx)
-            .children([{
-                // html fragment from file defined in query
-                if self.respbody.is_empty() {
-                    div(&cx).finish()
-                } else {
-                    get_root_element(&self.respbody, bump).unwrap()
-                }
-            }])
-            .finish()
+        // html fragment from file defined in query
+        if self.respbody.is_empty() {
+            div(&cx).finish()
+        } else {
+            get_root_element(&self.respbody, bump).unwrap()
+        }
     }
 }
 
@@ -89,17 +85,26 @@ impl Render for RootRenderingComponent {
 /// I wanted to use dodrio::Node, but it has only private methods.  
 /// I must use element_builder.  
 fn get_root_element<'a>(input: &str, bump: &'a Bump) -> Result<Node<'a>, String> {
-    log1("get_root_element");
+    //log1("get_root_element");
     let mut pp = ReaderForMicroXml::new(input);
 
     let mut root_element;
+    let mut html_or_svg = 0; //0-html, 1-svg
     match pp.read_event() {
         Event::StartElement(name) => {
             let name = bumpalo::format!(in bump, "{}",name).into_bump_str();
             // log1(&format!("START id_num {} name {}", id_num, name));
             root_element = ElementBuilder::new(bump, name);
+            if name == "svg" {
+                html_or_svg = 1; //svg
+            }
+            if html_or_svg == 1 {
+                //svg elements have this namespace
+                root_element = root_element.namespace(Some("http://www.w3.org/2000/svg"));
+                //log1("namespace");
+            }
             // recursive function can return error
-            match fill_element_builder(&mut pp, root_element, bump) {
+            match fill_element_builder(&mut pp, root_element, bump, html_or_svg) {
                 //the methods are move, so I have to return the moved value
                 Ok(new_root_element) => root_element = new_root_element,
                 Err(err) => {
@@ -129,6 +134,7 @@ fn fill_element_builder<'a>(
         bumpalo::collections::Vec<'a, Node<'a>>,
     >,
     bump: &'a Bump,
+    mut html_or_svg: usize,
 ) -> Result<
     ElementBuilder<
         'a,
@@ -144,7 +150,21 @@ fn fill_element_builder<'a>(
                 //construct a child element and fill it (recursive)
                 let name = bumpalo::format!(in bump, "{}",name).into_bump_str();
                 let mut child_element = ElementBuilder::new(bump, name);
-                child_element = fill_element_builder(pp, child_element, bump)?;
+                if name == "svg" {
+                    //this tagname changes to svg now
+                    html_or_svg = 1; //svg
+                }
+                if html_or_svg == 1 {
+                    //this is the
+                    //svg elements have this namespace
+                    child_element = child_element.namespace(Some("http://www.w3.org/2000/svg"));
+                    //log1("namespace");
+                }
+                if name == "foreignObject" {
+                    //this tagname changes to html for children, not for this element
+                    html_or_svg = 0; //html
+                }
+                child_element = fill_element_builder(pp, child_element, bump, html_or_svg)?;
                 element = element.child(child_element.finish());
             }
             Event::Attribute(name, value) => {

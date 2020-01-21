@@ -1,33 +1,21 @@
 /*simplified css style based on https://www.w3schools.com/w3css/default.asp */
 
-/*custom properties, variables*/
-:root {
-    --fs16px:16px;
-    --fs13cpl:3.6rem;
-    --fs16cpl:3.0rem;
-    --fs20cpl:2.4rem;
-    --fs24cpl:2.0rem;
-    --fs26cpl:1.8rem;
-    --fs32cpl:1.5rem;
-    --fs40cpl:1.2rem;
-    --fs48cpl:1.0rem;
-    --fs60cpl:0.8rem;
-}
-
-/*region elements - styles accross all the elements */
+/*region elements - styles across all the elements */
 
 html { 
     /*the font-size is very much dependent on the font-family*/
     font-family: Verdana, sans-serif;
     /*try to avoid mobile browsers to mess with the font-size*/
+    /*it does not work if the user has set accessibility bigger fonts*/
+    /*interestingly, the smaller font got bigger, but the already big fonts stay the same.*/
+    /*except for the svg text. That is the only fixed size without surprises*/
     -webkit-text-size-adjust: none; 
     -ms-text-size-adjust: none; 
     text-size-adjust: none;
     /*This is the base font-size. All other font-size 
     use rem units that are
-    relative to this font-size.
-    In WASM I manipulate this value to have the right text width for the game.*/
-    font-size: var(--fs16px);
+    relative to this font-size.*/
+    font-size: 16px;
     /*this is a game. All pages except instructions should be not scrollable*/
     height: 100%;
     width:100%;
@@ -44,10 +32,11 @@ html {
 
 body{
     background-color: #000000;
+    /*this is mobile only portrait only game*/
     max-width: 600px;
     min-width:300px;
     width:100%;
-    /*margin auto means centered horizontaly*/
+    /*margin auto means centered horizontally*/
     margin: auto;
     /*this is a game. All pages except instructions should be not scrollable*/
     height: 100%;
@@ -74,6 +63,19 @@ table, caption, tbody, tfoot, thead, tr, th, td {
  font-size: var(--fs16rem);
 }
 
+svg {
+    background-color:darkslategrey;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#div_for_virtual_dom{
+    height: 100%;
+    padding-top: 48%;
+    position: relative;
+}
+
 img { 
     max-width:100%; 
     -ms-interpolation-mode: bicubic; 
@@ -84,35 +86,46 @@ img {
     box-sizing: inherit;
 }
 
+.text1{
+    font-family: Verdana, sans-serif;
+    font-size: 36px ;
+}
+
+.text2{
+    font-family: Verdana, sans-serif;
+    font-size: 24px ;
+}
+
 h1,h2,h3,h4,h5,h6,p {
+    font-family: Verdana, sans-serif;
     font-weight: 400;
     margin: 10px 0;
     text-align: center;
     width:100%;
 }
 
-h1 {
-    font-size: var(--fs13cpl) ;
+h1, .h1 {
+    font-size: 3.6rem ;
 }
 
-h2 {
-    font-size: var(--fs16cpl) ;
+h2, .h2 {
+    font-size: 3.0rem ;
 }
 
-h3 {
-    font-size: var(--fs20cpl) ;
+h3, .h3 {
+    font-size: 2.4rem ;
 }
 
 h4 {
-    font-size: var(--fs24cpl) ;
+    font-size: 2.0rem ;
 }
 
 h5 {
-    font-size: var(--fs26cpl) ;
+    font-size: 1.8rem ;
 }
 
 h6 {
-    font-size: var(--fs60cpl) ;
+    font-size: 0.8rem ;
 }
 
 /*region classes - can be used for many elements*/
@@ -154,13 +167,13 @@ img.center{
 
 .grid_container_header {
     display: grid;
-    font-size: var(--fs13cpl) ;
+    font-size: 3.6rem ;
     width:100%;
 }
 
 .grid_container_players {
     display: grid;
-    font-size: var(--fs24cpl) ;
+    font-size: 2.0rem ;
     width:100%;
 }
 
@@ -222,7 +235,7 @@ img.center{
     text-align: center;
     background-color: #212121;
     color: rgb(252, 255, 77);
-    font-size: var(--fs16cpl) ;
+    font-size: 3.0rem ;
 }
 
 #div_fullscreen{
@@ -243,3 +256,6 @@ img.center{
     }
   }
 
+.testclass{
+    color:red;
+}
