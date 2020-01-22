@@ -1,9 +1,9 @@
 [package]
 name = "dodrio_templating"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Luciano Bestia <luciano.bestia@gmail.com>"]
 edition = "2018"
-description = "font size"
+description = "templating for dodrio"
 repository = "https://github.com/LucianoBestia/dodrio_templating"
 readme = "README.md"
 license = "MIT"
@@ -23,8 +23,8 @@ opt-level = 's'
 
 [dependencies]
 unwrap = "1.2.1"
-#dodrio =  { git = "https://github.com/fitzgen/dodrio", branch = "master" }
-dodrio = {path = "../dodrio"}
+dodrio =  { git = "https://github.com/fitzgen/dodrio", branch = "master" }
+#dodrio = {path = "../dodrio"}
 wasm-bindgen = { version = "0.2.58" }
 console_error_panic_hook = "0.1.6"
 wee_alloc = "0.4.5"
@@ -65,4 +65,3 @@ features = [
 
 #[dev-dependencies]
 #wasm-bindgen-test = "0.3.8"
-

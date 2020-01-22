@@ -1,0 +1,23 @@
+<html><head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <title>dodrio_templating</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/dodrio_templating.css">
+</head>
+
+<body>
+
+  <!--section/div for rust/wasm code-->
+  <div id="div_for_virtual_dom"><svg height="100%" width="100%" fill="#2F4F4F"><text x="50%" y="5%" class="h2" fill="white">tst1</text><g transform="translate(100,100)"><text x="10%" y="15%" class="h1" fill="red">get_text from rrc: tst1<animateMotion path="M 0 0 L 100 100" dur="5s" fill="freeze"></animateMotion></text></g><foreignObject x="0%" y="50%" width="100%" height="15%"><div><input id="input_id" value="input_value" width="100%"></div></foreignObject><text x="50%" y="80%" class="h3" fill="white">
+		svg has its own challenges, but the fonts stay exact (i hope)</text></svg></div>
+
+  <!--importing rust/wasm code-->
+  <script type="module">
+    import init from "./pkg/dodrio_templating.js";
+    init("./pkg/dodrio_templating_bg.wasm");
+  </script>
+
+
+</body></html>

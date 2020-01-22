@@ -2,6 +2,7 @@
 
 use crate::RootRenderingComponent;
 use crate::fetchmod;
+use crate::log1;
 
 use dodrio::VdomWeak;
 use wasm_bindgen::{prelude::*, JsCast};
@@ -15,8 +16,11 @@ pub fn start_router(vdom: VdomWeak) {
     let on_hash_change = move || {
         let window = unwrap!(web_sys::window());
         let location = window.location();
-        let local_route = unwrap!(location.hash());
-
+        let mut local_route = unwrap!(location.hash());
+        if local_route.is_empty() {
+            local_route = "index".to_owned();
+        }
+        log1("after .hash");
         wasm_bindgen_futures::spawn_local({
             let vdom = vdom.clone();
             async move {
@@ -31,11 +35,13 @@ pub fn start_router(vdom: VdomWeak) {
                             // and re-render.
                             if rrc.local_route != local_route {
                                 rrc.local_route = local_route;
-                                let url =
-                                    format!("example/{}.html", rrc.local_route.replace("#", ""));
+                                let url = format!(
+                                    "html_templates/{}.html",
+                                    rrc.local_route.replace("#", "")
+                                );
                                 let v2 = vdom.clone();
                                 //I cannot simply await here because this closure is not async
-                                spawn_local(async_fetch_and_write_to_rrc(url, v2));
+                                spawn_local(async_fetch_and_write_to_rrc_html_template(url, v2));
                                 vdom.schedule_render();
                             }
                         }
@@ -61,19 +67,19 @@ pub fn start_router(vdom: VdomWeak) {
     on_hash_change.forget();
 }
 
+/// Fetch the html_template and save it in rrc.html_template  
 /// The async fn for executor spawn_local.  
-/// It updates the value in struct rrc with await.  
 /// example how to use it in on_click:  
 /// '''
 /// .on("click", |_root, vdom, _event| {
 ///     let v2 = vdom;
 ///     //async executor spawn_local is the recommended for wasm
-///     let url = "example/t1.html".to_owned();
+///     let url = "html_templates/t1.html".to_owned();
 ///     //this will change the rrc.html_template eventually
-///     spawn_local(async_fetch_and_write_to_rrc(url, v2));
+///     spawn_local(async_fetch_and_write_to_rrc_html_template(url, v2));
 /// })
 /// ```
-pub async fn async_fetch_and_write_to_rrc(url: String, vdom: VdomWeak) {
+pub async fn async_fetch_and_write_to_rrc_html_template(url: String, vdom: VdomWeak) {
     let resp_body_text: String = fetchmod::async_spwloc_fetch_text(url).await;
     // update values in rrc is async.
     // I can await a fn call or an async block.
