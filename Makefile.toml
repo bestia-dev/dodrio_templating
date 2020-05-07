@@ -39,7 +39,7 @@ skip_core_tasks = true
         "rsync -avz --delete-after /home/luciano/rustprojects/dodrio_templating/css/ /home/luciano/rustprojects/googlecloud/var/www/html/dodrio_templating/css/",
         "rsync -avz --delete-after /home/luciano/rustprojects/dodrio_templating/pkg/ /home/luciano/rustprojects/googlecloud/var/www/html/dodrio_templating/pkg/",
         "rsync -avz --delete-after /home/luciano/rustprojects/dodrio_templating/index.html /home/luciano/rustprojects/googlecloud/var/www/html/dodrio_templating/index.html",
-        "rsync -e ssh -avz --delete-after /home/luciano/rustprojects/googlecloud/var/www/html/dodrio_templating/ luciano_bestia@34.87.17.103:/var/www/html/dodrio_templating/",
+        "rsync -e ssh -avz --delete-after /home/luciano/rustprojects/googlecloud/var/www/html/dodrio_templating/ luciano_bestia@bestia.dev:/var/www/html/dodrio_templating/",
     ]
 # endregion
 
