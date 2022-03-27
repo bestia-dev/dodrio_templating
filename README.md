@@ -1,6 +1,6 @@
 # dodrio_templating
 
-**description**  
+**separate graphic designer and programers work**  
 ***version: 0.2.0  date: 2020-01-02 author: [dev_Bestia](https://bestia.dev) repository: [GitHub](https://github.com/LucianoBestia/dodrio_templating)***  
 
 I don't know. There is so much confusion and choice around javascript/wasm and html templating.  
