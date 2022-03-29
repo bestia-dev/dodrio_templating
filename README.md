@@ -1,7 +1,7 @@
 # dodrio_templating
 
 **description**  
-***version: 0.2.0  date: 2020-01-02 author: [dev_Bestia](https://bestia.dev) repository: [GitHub](https://github.com/LucianoBestia/dodrio_templating)***  
+***version: 0.2.0  date: 2020-01-02 author: [bestia.dev](https://bestia.dev) repository: [GitHub](https://github.com/bestia-dev/dodrio_templating)***  
 
 I don't know. There is so much confusion and choice around javascript/wasm and html templating.  
 I tried to use typed-html. It is macro based. You write a jsx like syntax inside rust functions.  

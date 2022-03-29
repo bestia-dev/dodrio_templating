@@ -1,10 +1,10 @@
 [package]
 name = "dodrio_templating"
 version = "0.2.0"
-authors = ["Luciano Bestia <luciano.bestia@gmail.com>"]
+authors = ["bestia.dev <info@bestia.dev>"]
 edition = "2018"
 description = "templating for dodrio"
-repository = "https://github.com/LucianoBestia/dodrio_templating"
+repository = "https://github.com/bestia-dev/dodrio_templating"
 readme = "README.md"
 license = "MIT"
 keywords = ["wasm","templating"]
