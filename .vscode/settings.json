@@ -1,6 +1,5 @@
 {
     "cSpell.words": [
-        "Roboto",
         "apos",
         "decodehtml",
         "fncaller",
@@ -8,8 +7,10 @@
         "htmltemplatemod",
         "mylocal",
         "myurl",
+        "Roboto",
         "routermod",
         "rrcwrite",
+        "rustlang",
         "spwloc"
     ]
 }
