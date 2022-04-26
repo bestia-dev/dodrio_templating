@@ -3,6 +3,8 @@
 **description**  
 ***version: 0.2.0  date: 2020-01-02 author: [bestia.dev](https://bestia.dev) repository: [GitHub](https://github.com/bestia-dev/dodrio_templating)***  
 
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fbestia-dev%2Fdodrio_templating&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+
 I don't know. There is so much confusion and choice around javascript/wasm and html templating.  
 I tried to use typed-html. It is macro based. You write a jsx like syntax inside rust functions.  
 It looks really nice to code html directly inside rust.  
