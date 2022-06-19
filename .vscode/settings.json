@@ -1,16 +1,21 @@
 {
     "cSpell.words": [
         "apos",
+        "bestia",
         "decodehtml",
+        "dodrio",
         "fncaller",
         "htmlentitiesmod",
         "htmltemplatemod",
+        "microxml",
         "mylocal",
         "myurl",
         "Roboto",
         "routermod",
         "rrcwrite",
         "rustlang",
-        "spwloc"
+        "spwloc",
+        "templating",
+        "vdom"
     ]
 }
