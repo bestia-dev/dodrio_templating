@@ -3,7 +3,7 @@
 **simple templating for dodrio**  
 ***version: 0.2.0  date: 2020-01-02 author: [bestia.dev](https://bestia.dev) repository: [GitHub](https://github.com/bestia-dev/dodrio_templating)***  
 
-![Hits](https://bestia.dev/webpage_hit_counter/get_svg_image/598857325)
+![Hits](https://bestia.dev/webpage_hit_counter/get_svg_image/598857325.svg)
 
 Hashtags: #rustlang #template  
 My projects on Github are more like a tutorial than a finished product: [bestia-dev tutorials](https://github.com/bestia-dev/tutorials_rust_wasm).
