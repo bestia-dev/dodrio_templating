@@ -3,6 +3,9 @@
 **simple templating for dodrio**  
 ***version: 0.2.0  date: 2020-01-02 author: [bestia.dev](https://bestia.dev) repository: [GitHub](https://github.com/bestia-dev/dodrio_templating)***  
 
+![status](https://img.shields.io/badge/obsolete-red) 
+![status](https://img.shields.io/badge/archived-red) 
+![status](https://img.shields.io/badge/tutorial-yellow) 
 ![Hits](https://bestia.dev/webpage_hit_counter/get_svg_image/598857325.svg)
 
 Hashtags: #rustlang #template  
